@@ -9,6 +9,7 @@ from torchvision.transforms.functional import to_pil_image
 
 from adetailer import PredictOutput
 from adetailer.common import create_mask_from_bbox
+from adetailer.mask import add_bounding_boxes_padding
 
 if TYPE_CHECKING:
     import torch
@@ -21,6 +22,7 @@ def ultralytics_predict(
     confidence: float = 0.3,
     device: str = "",
     classes: str = "",
+    bbox_padding: int = 0,
 ) -> PredictOutput:
     from ultralytics import YOLO
 
@@ -31,7 +33,12 @@ def ultralytics_predict(
     bboxes = pred[0].boxes.xyxy.cpu().numpy()
     if bboxes.size == 0:
         return PredictOutput()
+    
     bboxes = bboxes.tolist()
+    
+    print("bboxes before: ", bboxes)
+    bboxes = add_bounding_boxes_padding(bboxes, image.size, bbox_padding)
+    print("bboxes after: ", bboxes)
 
     if pred[0].masks is None:
         masks = create_mask_from_bbox(bboxes, image.size)

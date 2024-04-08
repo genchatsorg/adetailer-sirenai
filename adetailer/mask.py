@@ -222,6 +222,18 @@ def filter_by_ratio(pred: PredictOutput, low: float, high: float) -> PredictOutp
     pred.masks = [pred.masks[i] for i in idx]
     return pred
 
+def add_bounding_boxes_padding(bboxes, image_size, padding: int) -> PredictOutput:
+    w, h = image_size
+    orig_area = w * h
+
+    for i in range(len(bboxes)):
+        bboxes[i][0] = max(0, bboxes[i][0] - padding)
+        bboxes[i][1] = max(0, bboxes[i][1] - padding)
+        bboxes[i][2] = min(w, bboxes[i][2] + padding)
+        bboxes[i][3] = min(h, bboxes[i][3] + padding)
+
+    return bboxes
+
 
 def filter_k_largest(pred: PredictOutput, k: int = 0) -> PredictOutput:
     if not pred.bboxes or k == 0:

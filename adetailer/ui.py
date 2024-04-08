@@ -354,6 +354,17 @@ def mask_preprocessing(w: Widgets, n: int, is_img2img: bool):
                 value="None",
                 elem_id=eid("ad_mask_merge_invert"),
             )
+            
+        with gr.Row():
+            w.ad_bounding_box_padding = gr.Slider(
+                label="Bounding box padding" + suffix(n),
+                minimum=0,
+                maximum=512,
+                step=1,
+                value=0,
+                visible=True,
+                elem_id=eid("ad_bounding_box_padding"),
+            )
 
 
 def inpainting(w: Widgets, n: int, is_img2img: bool, webui_info: WebuiInfo):

@@ -34,6 +34,7 @@ from adetailer.mask import (
     is_all_black,
     mask_preprocess,
     sort_bboxes,
+    add_bounding_boxes_padding,
 )
 from adetailer.traceback import rich_traceback
 from adetailer.ui import WebuiInfo, adui, ordinal, suffix
@@ -84,7 +85,7 @@ if (
     adetailer_dir.mkdir()
 
 print(
-    f"[-] ADetailer initialized. version: {__version__}, num models: {len(model_mapping)}"
+    f"[-] ADetailer SirenAI initialized. version: {__version__}, num models: {len(model_mapping)}"
 )
 
 
@@ -579,10 +580,19 @@ class AfterDetailerScript(scripts.Script):
         return sort_bboxes(pred, sortby_idx)
 
     def pred_preprocessing(self, p, pred: PredictOutput, args: ADetailerArgs):
+        print("Pred preprocessing ...")
+        
         pred = filter_by_ratio(
             pred, low=args.ad_mask_min_ratio, high=args.ad_mask_max_ratio
         )
         pred = filter_k_largest(pred, k=args.ad_mask_k_largest)
+        
+        # if(int(args.ad_bounding_box_padding) > 0):
+        #     print("Add bounding box padding")
+        #     print("Before padding: ", pred.bboxes)
+        #     pred = add_bounding_boxes_padding(pred, padding=args.ad_bounding_box_padding)
+        #     print("After padding: ", pred.bboxes)
+            
         pred = self.sort_bboxes(pred)
         masks = mask_preprocess(
             pred.masks,
@@ -742,6 +752,7 @@ class AfterDetailerScript(scripts.Script):
             ad_model = self.get_ad_model(args.ad_model)
             kwargs["device"] = self.ultralytics_device
             kwargs["classes"] = args.ad_model_classes
+            kwargs["bbox_padding"] = args.ad_bounding_box_padding
 
         with change_torch_load():
             pred = predictor(ad_model, pp.image, args.ad_confidence, **kwargs)
