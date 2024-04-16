@@ -586,12 +586,6 @@ class AfterDetailerScript(scripts.Script):
             pred, low=args.ad_mask_min_ratio, high=args.ad_mask_max_ratio
         )
         pred = filter_k_largest(pred, k=args.ad_mask_k_largest)
-        
-        # if(int(args.ad_bounding_box_padding) > 0):
-        #     print("Add bounding box padding")
-        #     print("Before padding: ", pred.bboxes)
-        #     pred = add_bounding_boxes_padding(pred, padding=args.ad_bounding_box_padding)
-        #     print("After padding: ", pred.bboxes)
             
         pred = self.sort_bboxes(pred)
         masks = mask_preprocess(
@@ -732,6 +726,12 @@ class AfterDetailerScript(scripts.Script):
 
             `True` if image was processed, `False` otherwise.
         """
+        print("Postprocess image inner ...")
+        
+        if (pp.image is None):
+            print("[-] ADetailer: pp.image is None because of not having face or penis")
+            return False
+        
         if state.interrupted or state.skipped:
             return False
 
@@ -758,6 +758,12 @@ class AfterDetailerScript(scripts.Script):
             pred = predictor(ad_model, pp.image, args.ad_confidence, **kwargs)
 
         masks = self.pred_preprocessing(p, pred, args)
+        
+        # Set image to None for ignoring if the model can't detect face / penis
+        if(len(masks) == 0):
+            pp.image = None
+            return False
+        
         shared.state.assign_current_image(pred.preview)
 
         if not masks:
