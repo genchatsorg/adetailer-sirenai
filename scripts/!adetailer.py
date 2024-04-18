@@ -756,16 +756,16 @@ class AfterDetailerScript(scripts.Script):
 
         with change_torch_load():
             pred = predictor(ad_model, pp.image, args.ad_confidence, **kwargs)
-
+    
         masks = self.pred_preprocessing(p, pred, args)
         
         # Set image to None for ignoring if the model can't detect face / penis
-        if(len(masks) == 0):
-            if(args.is_have_face and pred.object_class == "face"):
+        if((len(masks) == 0) and args.enforce_presence):
+            if(pred.object_class == "face"):
                 print("Ignoring image because not have face")
                 pp.image = None
                 return False  
-            elif(args.is_have_penis and pred.object_class == "penis"):
+            elif(pred.object_class == "penis"):
                 print("Ignoring image because not have penis")
                 pp.image = None 
                 return False 
