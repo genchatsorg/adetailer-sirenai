@@ -93,6 +93,8 @@ class ADetailerArgs(BaseModel, extra=Extra.forbid):
     ad_controlnet_guidance_start: confloat(ge=0.0, le=1.0) = 0.0
     ad_controlnet_guidance_end: confloat(ge=0.0, le=1.0) = 1.0
     ad_bounding_box_padding: int = 0
+    is_have_face: bool = False
+    is_have_penis: bool = False
     is_api: bool = True
 
     @validator("is_api", pre=True)
@@ -190,6 +192,8 @@ class ADetailerArgs(BaseModel, extra=Extra.forbid):
         ppop("ADetailer ControlNet guidance start", cond=0.0)
         ppop("ADetailer ControlNet guidance end", cond=1.0)
         ppop("ADetailer bounding box padding", cond=0)
+        ppop("ADetailer check face", cond=False)
+        ppop("ADetailer check penis", cond=False)
 
         if suffix:
             p = {k + suffix: v for k, v in p.items()}
@@ -238,6 +242,8 @@ _all_args = [
     ("ad_controlnet_guidance_start", "ADetailer ControlNet guidance start"),
     ("ad_controlnet_guidance_end", "ADetailer ControlNet guidance end"),
     ("ad_bounding_box_padding", "ADetailer bounding box padding"),
+    ("is_have_face", "ADetailer check face"),
+    ("is_have_penis", "Adetailer check penis")
 ]
 
 _args = [Arg(*args) for args in _all_args]

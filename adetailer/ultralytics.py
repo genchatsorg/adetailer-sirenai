@@ -29,16 +29,16 @@ def ultralytics_predict(
     model = YOLO(model_path)
     apply_classes(model, model_path, classes)
     pred = model(image, conf=confidence, device=device)
+    
+    object_class = model.names[0]
 
     bboxes = pred[0].boxes.xyxy.cpu().numpy()
     if bboxes.size == 0:
-        return PredictOutput()
+        return PredictOutput(object_class=object_class)
     
     bboxes = bboxes.tolist()
     
-    print("bboxes before: ", bboxes)
     bboxes = add_bounding_boxes_padding(bboxes, image.size, bbox_padding)
-    print("bboxes after: ", bboxes)
 
     if pred[0].masks is None:
         masks = create_mask_from_bbox(bboxes, image.size)
@@ -48,7 +48,7 @@ def ultralytics_predict(
     preview = cv2.cvtColor(preview, cv2.COLOR_BGR2RGB)
     preview = Image.fromarray(preview)
 
-    return PredictOutput(bboxes=bboxes, masks=masks, preview=preview)
+    return PredictOutput(bboxes=bboxes, masks=masks, preview=preview, object_class=object_class)
 
 
 def apply_classes(model: YOLO | YOLOWorld, model_path: str | Path, classes: str):

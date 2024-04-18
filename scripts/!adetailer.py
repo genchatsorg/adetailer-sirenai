@@ -761,8 +761,16 @@ class AfterDetailerScript(scripts.Script):
         
         # Set image to None for ignoring if the model can't detect face / penis
         if(len(masks) == 0):
-            pp.image = None
-            return False
+            if(args.is_have_face and pred.object_class == "face"):
+                print("Ignoring image because not have face")
+                pp.image = None
+                return False  
+            elif(args.is_have_penis and pred.object_class == "penis"):
+                print("Ignoring image because not have penis")
+                pp.image = None 
+                return False 
+            else:
+                print("Not ignoring image")
         
         shared.state.assign_current_image(pred.preview)
 

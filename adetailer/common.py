@@ -19,6 +19,7 @@ class PredictOutput:
     bboxes: list[list[int | float]] = field(default_factory=list)
     masks: list[Image.Image] = field(default_factory=list)
     preview: Optional[Image.Image] = None
+    object_class: Optional[str] = None
 
 
 def hf_download(file: str, repo_id: str = REPO_ID) -> str | None:

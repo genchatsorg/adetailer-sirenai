@@ -365,6 +365,20 @@ def mask_preprocessing(w: Widgets, n: int, is_img2img: bool):
                 visible=True,
                 elem_id=eid("ad_bounding_box_padding"),
             )
+            
+            w.is_have_face = gr.Checkbox(
+                label="Is have face" + suffix(n),
+                value=False,
+                visible=True,
+                elem_id=eid("is_have_face"),
+            )
+            
+            w.is_have_penis = gr.Checkbox(
+                label="Is have penis" + suffix(n),
+                value=False,
+                visible=True,
+                elem_id=eid("is_have_penis"),
+            )
 
 
 def inpainting(w: Widgets, n: int, is_img2img: bool, webui_info: WebuiInfo):
